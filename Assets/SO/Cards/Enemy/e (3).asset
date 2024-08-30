@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7394f52c7101e064c8499b53b6ee713f, type: 3}
+  m_Name: e (3)
+  m_EditorClassIdentifier: 
+  name: '"Gale Hawthorne"'
+  description: "\u201CGale Hawthorne, el cazador del Distrito 12, est\xE1 siempre
+    dispuesto a luchar por la libertad. Su habilidad para la caza y su esp\xEDritu
+    rebelde pueden ser la clave para ganar Los Juegos del Hambre\u201D"
+  kind: 0
+  Image: gale
+  Faction: '"Los Tributos"'
+  owner: 0
+  type: 1
+  originalPower: 3
+  power: 3
+  effect: 

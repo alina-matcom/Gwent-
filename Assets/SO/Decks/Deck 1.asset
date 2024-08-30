@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbe1fa85b2cba2e4aaa1ea0ab0801c5b, type: 3}
+  m_Name: Deck 1
+  m_EditorClassIdentifier: 
+  originalCards:
+  - {fileID: 11400000, guid: 7dcc395d4014790429dbc180b5360163, type: 2}
+  - {fileID: 11400000, guid: 8c5fff2f3e879d745b2c956d3c92fbde, type: 2}
+  - {fileID: 11400000, guid: 624da1c62c10ba64b898e7ae817e0444, type: 2}
+  - {fileID: 11400000, guid: 9fe29956db6cd69489d81eb2b5c09e23, type: 2}
+  - {fileID: 11400000, guid: 1cc2719f2f33981428cae204ff118e7e, type: 2}
+  - {fileID: 11400000, guid: 1635dab508d4e104eac899782414c189, type: 2}
+  - {fileID: 11400000, guid: 3ac51e5cf82ea1d47b3b6d34b8d57afa, type: 2}
+  - {fileID: 11400000, guid: 5e0b6686dc8c9b9499e31559ef06bda7, type: 2}
+  - {fileID: 11400000, guid: b0eeb44c06e111b41836de3c286d856c, type: 2}
+  - {fileID: 11400000, guid: 9fe57862c0a16104d820dcda43f302b6, type: 2}
+  - {fileID: 11400000, guid: 0a982bdcbe30e2d4281a998677828d7a, type: 2}
+  - {fileID: 11400000, guid: 0d6539880a7018848af4f35221b9b70b, type: 2}
+  - {fileID: 11400000, guid: c3329cd5fe011c543993f4c998bcce97, type: 2}
+  - {fileID: 11400000, guid: 4b51fca03fc2e39448efe30fdd328aee, type: 2}
+  - {fileID: 11400000, guid: 32b286a12b39f4c428777d7609ffbc4c, type: 2}
+  - {fileID: 11400000, guid: 3f1d95d6ea48d1448b116eb4c8b91ded, type: 2}
+  - {fileID: 11400000, guid: bf7c379818844ec4ab18da74ec80f4f4, type: 2}
+  - {fileID: 11400000, guid: ac2adc1e6b937234bb43fd09e28078f6, type: 2}
+  - {fileID: 11400000, guid: 1281a4bc488321e46be3ada5918300af, type: 2}
+  - {fileID: 11400000, guid: 2facca180ea3f7e4d86d4e5d7c06dbc7, type: 2}
+  - {fileID: 11400000, guid: 1ce11994d6874d547a1ff945f78b4a03, type: 2}
+  - {fileID: 11400000, guid: 821616eb924877a46aa469e7c0bd08b9, type: 2}
+  - {fileID: 11400000, guid: 6f118348f6d02d942b1a2ac857f9df96, type: 2}
+  - {fileID: 11400000, guid: 6f118348f6d02d942b1a2ac857f9df96, type: 2}
+  - {fileID: 11400000, guid: ccf426a9c9073cc408e783d5a918e01c, type: 2}
+  cards:
+  - {fileID: 11400000, guid: 7dcc395d4014790429dbc180b5360163, type: 2}
+  - {fileID: 11400000, guid: 3ac51e5cf82ea1d47b3b6d34b8d57afa, type: 2}
+  - {fileID: 11400000, guid: b0eeb44c06e111b41836de3c286d856c, type: 2}
+  - {fileID: 11400000, guid: 32b286a12b39f4c428777d7609ffbc4c, type: 2}
+  - {fileID: 11400000, guid: 1281a4bc488321e46be3ada5918300af, type: 2}
+  - {fileID: 11400000, guid: 1ce11994d6874d547a1ff945f78b4a03, type: 2}
+  - {fileID: 11400000, guid: 6f118348f6d02d942b1a2ac857f9df96, type: 2}

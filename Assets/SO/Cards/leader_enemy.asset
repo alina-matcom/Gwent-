@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad88f5af629655e4ab05ab0b0bef6285, type: 3}
+  m_Name: leader_enemy
+  m_EditorClassIdentifier: 
+  name: '"Katniss Everdeen" '
+  description: " \u201CKatniss Everdeen, la chica en llamas y la l\xEDder de la rebeli\xF3n,
+    es una fuerza a tener en cuenta. Su habilidad con el arco y su esp\xEDritu indomable
+    pueden ser la clave para liderar a tu facci\xF3n a la victoria en Los Juegos
+    del Hambre\u201D"
+  kind: 0
+  Image: katniss
+  Faction: '"Los Tributos"'
+  owner: 0

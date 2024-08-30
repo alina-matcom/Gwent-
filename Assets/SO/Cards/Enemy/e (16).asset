@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7394f52c7101e064c8499b53b6ee713f, type: 3}
+  m_Name: e (16)
+  m_EditorClassIdentifier: 
+  name: '"Johanna Mason"'
+  description: "\u201CJohanna Mason, la temible tributo del Distrito 7, no tiene
+    miedo de hacer lo que sea necesario para sobrevivir. Su habilidad con el hacha
+    y su resistencia pueden ser la clave para ganar Los Juegos del Hambre\u201D"
+  kind: 0
+  Image: johanna
+  Faction: '"Los Tributos"'
+  owner: 0
+  type: 0
+  originalPower: 8
+  power: 8
+  effect: 
