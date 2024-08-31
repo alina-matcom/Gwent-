@@ -3,6 +3,7 @@ using GwentInterpreters;
 using System.Collections.Generic;
 using System.IO;
 using System.Collections;
+using System;
 
 public class GameController : Singleton<GameController>
 {
@@ -36,8 +37,22 @@ public class GameController : Singleton<GameController>
         playerDeck.deck = ScriptableObject.CreateInstance<Deck>();
         enemyDeck.deck = ScriptableObject.CreateInstance<Deck>();
 
-        playerDeck.deck.originalCards = new List<CardOld>(cards);
-        enemyDeck.deck.originalCards = new List<CardOld>(cards);
+        // Modificar el owner de las cartas del jugador y del enemigo
+        List<CardOld> playerCards = new List<CardOld>(cards);
+        List<CardOld> enemyCards = new List<CardOld>(cards);
+
+        foreach (var card in playerCards)
+        {
+            card.owner = 0; // Asignar owner 0 para el jugador
+        }
+
+        foreach (var card in enemyCards)
+        {
+            card.owner = 1; // Asignar owner 1 para el enemigo
+        }
+
+        playerDeck.deck.originalCards = playerCards;
+        enemyDeck.deck.originalCards = enemyCards;
 
         playerDeck.deck.Reset();
         enemyDeck.deck.Reset();
@@ -219,4 +234,71 @@ public class GameController : Singleton<GameController>
         Debug.Log("Player " + winner + " wins!!");
         StartCoroutine(uiManager.ShowWinnerMessage($"Player {winner} wins the game!"));
     }
+
+    public List<CardOld> DeckOfPlayer(int player)
+    {
+        if (player == 0)
+        {
+            return playerDeck.GetDeckCards();
+        }
+        else if (player == 1)
+        {
+            return enemyDeck.GetDeckCards();
+        }
+        else
+        {
+            throw new ArgumentException("El parámetro player debe ser 0 o 1.");
+        }
+    }
+
+    public List<CardOld> HandOfPlayer(int player)
+    {
+        if (player == 0)
+        {
+            return playerHandManager.GetCardsInHand();
+        }
+        else if (player == 1)
+        {
+            return enemyHandManager.GetCardsInHand();
+        }
+        else
+        {
+            throw new ArgumentException("El parámetro player debe ser 0 o 1.");
+        }
+    }
+
+    public List<CardOld> GraveyardOfPlayer(int player)
+    {
+        if (player == 0 || player == 1)
+        {
+            return new List<CardOld>();
+        }
+        else
+        {
+            throw new ArgumentException("El parámetro player debe ser 0 o 1.");
+        }
+    }
+
+    public List<CardOld> FieldOfPlayer(int player)
+    {
+        if (player == 0 || player == 1)
+        {
+            return new List<CardOld>();
+        }
+        else
+        {
+            throw new ArgumentException("El parámetro player debe ser 0 o 1.");
+        }
+    }
+
+    public int TriggerPlayer
+    {
+        get { return currentTurn; }
+    }
+
+    public List<CardOld> Board
+    {
+        get { return BoardController.Instance.GetAllCards(); }
+    }
+
 }

@@ -5,7 +5,7 @@ using System;
 [CreateAssetMenu(fileName = "NewDeck", menuName = "Deck")]
 public class Deck : ScriptableObject
 {
-    public List<CardOld> originalCards = new List<CardOld>(); 
+    public List<CardOld> originalCards = new List<CardOld>();
     public List<CardOld> cards = new List<CardOld>();
 
     public void Reset()
@@ -30,5 +30,10 @@ public class Deck : ScriptableObject
         cards.RemoveAt(randomIndex);
 
         return drawnCard;
+    }
+    // Nuevo método para obtener la lista de cartas actuales
+    public List<CardOld> GetCards()
+    {
+        return new List<CardOld>(cards);
     }
 }

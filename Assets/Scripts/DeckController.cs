@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DeckController : MonoBehaviour
@@ -21,4 +22,9 @@ public class DeckController : MonoBehaviour
         yield return new WaitForSeconds(0.1f); // Ajusta este valor según sea necesario
     }
 }
+// Nuevo método para obtener la lista de cartas del deck
+    public List<CardOld> GetDeckCards()
+    {
+        return deck.GetCards();
+    }
 }

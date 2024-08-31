@@ -8,193 +8,156 @@ using UnityEngine;
 namespace GwentInterpreters
 {
     public class Card : CardOld
-{
-    public string Type { get; set; }
-    public double Power { get; set; }
-    public List<string> Range { get; set; }
-    public List<EffectActionResult> OnActivation { get; }  // Cambiado de EffectAction a EffectActionResult
-
-    private readonly double powerOriginal;
-
-    public Card(string type, string name, string faction, double power, List<string> range, List<EffectActionResult> onActivation, int owner)
     {
-        Type = type;
-        this.name = name;  // Asignar el valor del parámetro name a la propiedad name de CardOld
-        Faction = faction;
-        Power = power;
-        Range = range;
-        OnActivation = onActivation;
-        this.owner = owner;  // Asignar el valor del parámetro owner a la propiedad owner de CardOld
+        public string Type { get; set; }
+        public double Power { get; set; }
+        public List<string> Range { get; set; }
+        public List<EffectActionResult> OnActivation { get; }  // Cambiado de EffectAction a EffectActionResult
 
-        // Inicializar las propiedades heredadas con valores por defecto
-        description = "Carta creada por mi compilador";
+        private readonly double powerOriginal;
 
-        // Inicializar kind basado en el valor de Type
-        switch (type)
+        public Card(string type, string name, string faction, double power, List<string> range, List<EffectActionResult> onActivation, int owner)
         {
-            case "Oro":
-                kind = CardKind.Gold;
-                break;
-            case "Plata":
-                kind = CardKind.Silver;
-                break;
-            default:
-                kind = CardKind.Bronze;
-                break;
+            Type = type;
+            this.name = name;  // Asignar el valor del parámetro name a la propiedad name de CardOld
+            Faction = faction;
+            Power = power;
+            Range = range;
+            OnActivation = onActivation;
+            this.owner = owner;  // Asignar el valor del parámetro owner a la propiedad owner de CardOld
+
+            // Inicializar las propiedades heredadas con valores por defecto
+            description = "Carta creada por mi compilador";
+
+            // Inicializar kind basado en el valor de Type
+            switch (type)
+            {
+                case "Oro":
+                    kind = CardKind.Gold;
+                    break;
+                case "Plata":
+                    kind = CardKind.Silver;
+                    break;
+                default:
+                    kind = CardKind.Bronze;
+                    break;
+            }
+
+            // Inicializar Image con el valor por defecto "gwent"
+            Image = "gwent";
+
+            // Inicializar powerOriginal con el valor de power
+            powerOriginal = power;
         }
 
-        // Inicializar Image con el valor por defecto "gwent"
-        Image = "gwent";
+        public override void Reset()
+        {
+            // Restaurar el valor de Power a su valor original
+            Power = powerOriginal;
+        }
 
-        // Inicializar powerOriginal con el valor de power
-        powerOriginal = power;
+        public override BoardSlot GetBoardSlot()
+        {
+            // Implementar GetBoardSlot basado en el rango de la carta
+            if (Range.Contains("Melee"))
+            {
+                return BoardSlot.MeleeZone;
+            }
+            else if (Range.Contains("Ranged"))
+            {
+                return BoardSlot.RangedZone;
+            }
+            else if (Range.Contains("Siege"))
+            {
+                return BoardSlot.SiegeZone;
+            }
+            else
+            {
+                return BoardSlot.None;
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"Card: {name}, Type: {Type}, Faction: {Faction}, Power: {Power}, Range: [{string.Join(", ", Range)}], Owner: {owner}";
+        }
     }
-
-    public override void Reset()
-    {
-        // Restaurar el valor de Power a su valor original
-        Power = powerOriginal;
-    }
-
-    public override BoardSlot GetBoardSlot()
-    {
-        // Implementar GetBoardSlot basado en el rango de la carta
-        if (Range.Contains("Melee"))
-        {
-            return BoardSlot.MeleeZone;
-        }
-        else if (Range.Contains("Ranged"))
-        {
-            return BoardSlot.RangedZone;
-        }
-        else if (Range.Contains("Siege"))
-        {
-            return BoardSlot.SiegeZone;
-        }
-        else
-        {
-            return BoardSlot.None;
-        }
-    }
-
-    public override string ToString()
-    {
-        return $"Card: {name}, Type: {Type}, Faction: {Faction}, Power: {Power}, Range: [{string.Join(", ", Range)}], Owner: {owner}";
-    }
-}
 
     public class Context
     {
-        private int triggerPlayer;
-        private Iterable board;
-        private Dictionary<int, Iterable> hands;
-        private Dictionary<int, Iterable> fields;
-        private Dictionary<int, Iterable> graveyards;
-        private Dictionary<int, Iterable> decks;
-
-        public Context(int triggerPlayer)
+        public int TriggerPlayer
         {
-            this.triggerPlayer = triggerPlayer;
-            board = new Iterable();
-            hands = new Dictionary<int, Iterable>();
-            fields = new Dictionary<int, Iterable>();
-            graveyards = new Dictionary<int, Iterable>();
-            decks = new Dictionary<int, Iterable>();
-
-            // Inicializar las colecciones para el jugador que activa los efectos
-            InitializePlayerCollections(triggerPlayer);
+            get { return GameController.Instance.TriggerPlayer; }
         }
 
-        public int TriggerPlayer => triggerPlayer;
-        public Iterable Board => board;
+        public Iterable Board
+        {
+            get { return new Iterable(GameController.Instance.Board); }
+        }
 
         public Iterable HandOfPlayer(int player)
         {
-            if (!hands.ContainsKey(player))
-            {
-                InitializePlayerCollections(player);
-            }
-            return hands[player];
+            return new Iterable(GameController.Instance.HandOfPlayer(player));
         }
 
         public Iterable FieldOfPlayer(int player)
         {
-            if (!fields.ContainsKey(player))
-            {
-                InitializePlayerCollections(player);
-            }
-            return fields[player];
+            return new Iterable(GameController.Instance.FieldOfPlayer(player));
         }
 
         public Iterable GraveyardOfPlayer(int player)
         {
-            if (!graveyards.ContainsKey(player))
-            {
-                InitializePlayerCollections(player);
-            }
-            return graveyards[player];
+            return new Iterable(GameController.Instance.GraveyardOfPlayer(player));
         }
 
         public Iterable DeckOfPlayer(int player)
         {
-            if (!decks.ContainsKey(player))
-            {
-                InitializePlayerCollections(player);
-            }
-            return decks[player];
-        }
-
-        public Iterable Hand => HandOfPlayer(triggerPlayer);
-        public Iterable Field => FieldOfPlayer(triggerPlayer);
-        public Iterable Graveyard => GraveyardOfPlayer(triggerPlayer);
-        public Iterable Deck => DeckOfPlayer(triggerPlayer);
-
-        private void InitializePlayerCollections(int player)
-        {
-            hands[player] = new Iterable();
-            fields[player] = new Iterable();
-            graveyards[player] = new Iterable();
-            decks[player] = new Iterable();
+            return new Iterable(GameController.Instance.DeckOfPlayer(player));
         }
     }
-    public class Iterable : IList<Card>
+    public class Iterable : IList<CardOld>
     {
-        private List<Card> cards;
+        private List<CardOld> cards;
 
         public Iterable()
         {
-            cards = new List<Card>();
+            cards = new List<CardOld>();
+        }
+        // Nuevo constructor que recibe una lista de cartas
+        public Iterable(List<CardOld> initialCards)
+        {
+            cards = new List<CardOld>(initialCards);
         }
 
         // Implementación de IList<Card>
-        public Card this[int index] { get => cards[index]; set => cards[index] = value; }
+        public CardOld this[int index] { get => cards[index]; set => cards[index] = value; }
         public int Count => cards.Count;
         public bool IsReadOnly => false;
 
-        public void Add(Card card) => cards.Add(card);
+        public void Add(CardOld card) => cards.Add(card);
         public void Clear() => cards.Clear();
-        public bool Contains(Card card) => cards.Contains(card);
-        public void CopyTo(Card[] array, int arrayIndex) => cards.CopyTo(array, arrayIndex);
-        public IEnumerator<Card> GetEnumerator() => cards.GetEnumerator();
-        public int IndexOf(Card card) => cards.IndexOf(card);
-        public void Insert(int index, Card card) => cards.Insert(index, card);
-        public bool Remove(Card card) => cards.Remove(card);
+        public bool Contains(CardOld card) => cards.Contains(card);
+        public void CopyTo(CardOld[] array, int arrayIndex) => cards.CopyTo(array, arrayIndex);
+        public IEnumerator<CardOld> GetEnumerator() => cards.GetEnumerator();
+        public int IndexOf(CardOld card) => cards.IndexOf(card);
+        public void Insert(int index, CardOld card) => cards.Insert(index, card);
+        public bool Remove(CardOld card) => cards.Remove(card);
         public void RemoveAt(int index) => cards.RemoveAt(index);
         IEnumerator IEnumerable.GetEnumerator() => cards.GetEnumerator();
 
         // Métodos adicionales
-        public List<Card> Find(Func<Card, bool> predicate) => cards.Where(predicate).ToList();
+        public List<CardOld> Find(Func<CardOld, bool> predicate) => cards.Where(predicate).ToList();
 
-        public void Push(Card card) => cards.Add(card);
+        public void Push(CardOld card) => cards.Add(card);
 
-        public void SendBottom(Card card) => cards.Insert(0, card);
+        public void SendBottom(CardOld card) => cards.Insert(0, card);
 
-        public Card Pop()
+        public CardOld Pop()
         {
             if (cards.Count == 0)
                 throw new InvalidOperationException("No hay cartas en la colección.");
 
-            Card card = cards[cards.Count - 1];
+            CardOld card = cards[cards.Count - 1];
             cards.RemoveAt(cards.Count - 1);
             return card;
         }
@@ -207,7 +170,7 @@ namespace GwentInterpreters
             {
                 n--;
                 int k = rng.Next(n + 1);
-                Card value = cards[k];
+                CardOld value = cards[k];
                 cards[k] = cards[n];
                 cards[n] = value;
             }

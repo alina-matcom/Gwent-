@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GwentInterpreters;
 using UnityEngine;
 
@@ -146,5 +147,19 @@ public class BoardController : Singleton<BoardController>
         enemyMeleeZone.ResetRowPower();
         enemyRangedZone.ResetRowPower();
         enemySiegeZone.ResetRowPower();
+    }
+
+    public List<CardOld> GetAllCards()
+    {
+        List<CardOld> allCards = new List<CardOld>();
+
+        allCards.AddRange(playerMeleeZone.GetCards());
+        allCards.AddRange(playerRangedZone.GetCards());
+        allCards.AddRange(playerSiegeZone.GetCards());
+        allCards.AddRange(enemyMeleeZone.GetCards());
+        allCards.AddRange(enemyRangedZone.GetCards());
+        allCards.AddRange(enemySiegeZone.GetCards());
+
+        return allCards;
     }
 }
