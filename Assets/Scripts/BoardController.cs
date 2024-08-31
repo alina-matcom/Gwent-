@@ -1,4 +1,5 @@
 using System;
+using GwentInterpreters;
 using UnityEngine;
 
 public class BoardController : Singleton<BoardController>
@@ -15,7 +16,7 @@ public class BoardController : Singleton<BoardController>
     public TurnIndicator playerTurnIndicator;
     public TurnIndicator enemyTurnIndicator;
 
-    public static event Action OnScoreUpdateNeeded;
+    public static event System.Action OnScoreUpdateNeeded;
 
     public void Start()
     {
@@ -30,42 +31,59 @@ public class BoardController : Singleton<BoardController>
     }
 
     public void PlayCard(CardOld card, Slot slot, int turn)
+{
+    if (card is UnitCard unitCard)
     {
-        if (card is UnitCard unitCard)
+        switch (unitCard.type)
         {
-            switch (unitCard.type)
-            {
-                case UnitType.Melee:
-                    (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(unitCard);
-                    break;
+            case UnitType.Melee:
+                (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(unitCard);
+                break;
 
-                case UnitType.Ranged:
-                    (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(unitCard);
-                    break;
+            case UnitType.Ranged:
+                (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(unitCard);
+                break;
 
-                case UnitType.Siege:
-                    (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(unitCard);
-                    break;
-            }
+            case UnitType.Siege:
+                (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(unitCard);
+                break;
         }
-        else if (card is FieldCard)
-        {
-            if (slot is FieldZone)
-            {
-                slot.PlayCard(card);
-            }
-            else
-            {
-                Debug.Log("FieldCard can only be played in FieldZone.");
-            }
-        }
-        else if (slot is BuffSlot)
+    }
+    else if (card is FieldCard)
+    {
+        if (slot is FieldZone)
         {
             slot.PlayCard(card);
         }
-
-        UpdateScore();
+        else
+        {
+            Debug.Log("FieldCard can only be played in FieldZone.");
+        }
     }
+    else if (card is Card newCard)
+    {
+        switch (newCard.GetBoardSlot())
+        {
+            case BoardSlot.MeleeZone:
+                (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(newCard);
+                break;
+
+            case BoardSlot.RangedZone:
+                (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(newCard);
+                break;
+
+            case BoardSlot.SiegeZone:
+                (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(newCard);
+                break;
+        }
+    }
+    else if (slot is BuffSlot)
+    {
+        slot.PlayCard(card);
+    }
+
+    UpdateScore();
+}
 
     public void UpdateZonesPower()
     {
@@ -84,7 +102,7 @@ public class BoardController : Singleton<BoardController>
         enemyScore.SetPower(GetEnemyScore());
     }
 
-    public int GetPlayerScore()
+    public double GetPlayerScore()
     {
         return
             playerMeleeZone.GetRowPower() +
@@ -92,7 +110,7 @@ public class BoardController : Singleton<BoardController>
             playerSiegeZone.GetRowPower();
     }
 
-    public int GetEnemyScore()
+    public double  GetEnemyScore()
     {
         return
             enemyMeleeZone.GetRowPower() +

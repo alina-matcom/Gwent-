@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GwentInterpreters;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class Zone : MonoBehaviour
 {
-     public int rowPower;
+    public double rowPower;
     public ZoneSlot unitsSlot;
     public BuffSlot buffSlot;
     public PowerDisplay powerDisplay;
@@ -24,13 +25,17 @@ public class Zone : MonoBehaviour
         {
             unitsSlot.PlayCard(unitCard);
         }
+        else if (card is Card newCard)
+        {
+            unitsSlot.PlayCard(newCard);
+        }
         else
         {
             buffSlot.PlayCard(card);
         }
     }
 
-    public int GetRowPower()
+    public double GetRowPower()
     {
         return rowPower;
     }

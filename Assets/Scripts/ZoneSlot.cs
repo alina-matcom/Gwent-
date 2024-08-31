@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GwentInterpreters;
 using UnityEngine;
 
 public class ZoneSlot : Slot
@@ -24,26 +25,42 @@ public class ZoneSlot : Slot
 
   public override void PlayCard(CardOld card)
   {
-     if (card == null)
+    if (card == null)
     {
-        Debug.LogError("PlayCard was called with a null Card.");
-        return;
+      Debug.LogError("PlayCard was called with a null Card.");
+      return;
     }
-    if (card is UnitCard unitCard)
+    if (card is UnitCard || card is Card)
     {
       CardDisplay cardDisplay = Instantiate(cardPrefab, slot.transform);
-      cardDisplay.SetCard(unitCard);
+      cardDisplay.SetCard(card); // Aquí se usa la variable 'card' directamente
       cardDisplay.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
       cardDisplay.transform.localPosition = new Vector3(0, 0, 0);
       StartCoroutine(AdjustCardPositions());
     }
   }
 
-  public int GetRowPower()
+  public double GetRowPower()
   {
-    return GetCards().Sum(card => (card.card as UnitCard).power);
-  }
+    return GetCards().Sum(cardDisplay =>
+    {
+      var unitCard = cardDisplay.card as UnitCard;
+      var genericCard = cardDisplay.card as GwentInterpreters.Card;
 
+      if (unitCard != null)
+      {
+        return unitCard.power;
+      }
+      else if (genericCard != null)
+      {
+        return genericCard.Power;
+      }
+      else
+      {
+        return 0;
+      }
+    });
+  }
   public void ApplyEffect(PowerModifier modifier, int value)
   {
     List<CardDisplay> cards = GetCards();

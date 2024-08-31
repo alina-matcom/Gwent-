@@ -105,7 +105,13 @@ public class GameController : Singleton<GameController>
 
     public void PlaceCard(Slot slot)
     {
-        if (!CardManager.Instance.selectedCard) return;
+        if (!CardManager.Instance.selectedCard)
+        {
+            Debug.LogError("No card is selected.");
+            return;
+        }
+
+        Debug.Log("Playing card: " + CardManager.Instance.selectedCard.card.name);
 
         BoardController.Instance.PlayCard(CardManager.Instance.selectedCard.card, slot, currentTurn);
         playerHandManager.RemoveCard(CardManager.Instance.selectedCard);
@@ -113,11 +119,10 @@ public class GameController : Singleton<GameController>
         OnHighlight?.Invoke(BoardSlot.None, currentTurn);
         NextTurn();
     }
-
     public bool CheckRoundWinner()
     {
-        int playerScore = BoardController.Instance.GetPlayerScore();
-        int enemyScore = BoardController.Instance.GetEnemyScore();
+        double playerScore = BoardController.Instance.GetPlayerScore();
+        double enemyScore = BoardController.Instance.GetEnemyScore();
 
         if (playerPassed && enemyPassed)
         {
