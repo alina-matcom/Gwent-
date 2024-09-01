@@ -82,9 +82,9 @@ namespace GwentInterpreters
     {
         public string Source { get; }
         public bool Single { get; }
-        public Func<Card, bool> Predicate { get; }
+        public Func<CardOld, bool> Predicate { get; }
 
-        public SelectorResult(string source, bool single, Func<Card, bool> predicate)
+        public SelectorResult(string source, bool single, Func<CardOld, bool> predicate)
         {
             Source = source;
             Single = single;

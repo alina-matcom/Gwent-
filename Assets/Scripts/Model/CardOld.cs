@@ -3,12 +3,12 @@ using UnityEngine;
 
 public abstract class CardOld : ScriptableObject
 {
-    public new string name;
+    public string Name{get;set;}
     public string description;
     public CardKind kind;
     public string Image;
-    public string Faction;
-    public int owner;
+    public string Faction{get;set;}
+    public int Owner{get;set;}
     public abstract void Reset();
     public abstract BoardSlot GetBoardSlot();
 }

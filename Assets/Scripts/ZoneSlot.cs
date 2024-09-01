@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,13 +31,27 @@ public class ZoneSlot : Slot
       Debug.LogError("PlayCard was called with a null Card.");
       return;
     }
-    if (card is UnitCard || card is Card)
+
+    if (card is UnitCard unitCard)
     {
+      // Lógica específica para UnitCard
       CardDisplay cardDisplay = Instantiate(cardPrefab, slot.transform);
-      cardDisplay.SetCard(card); // Aquí se usa la variable 'card' directamente
+      cardDisplay.SetCard(unitCard);
       cardDisplay.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
       cardDisplay.transform.localPosition = new Vector3(0, 0, 0);
       StartCoroutine(AdjustCardPositions());
+    }
+    else if (card is Card newCard)
+    {
+      // Lógica específica para Card
+      CardDisplay cardDisplay = Instantiate(cardPrefab, slot.transform);
+      cardDisplay.SetCard(newCard);
+      cardDisplay.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+      cardDisplay.transform.localPosition = new Vector3(0, 0, 0);
+      StartCoroutine(AdjustCardPositions());
+      Debug.Log("Se ha jugado una carta de tipo Card.");
+      // Llamada al método para aplicar el efecto de la carta
+      newCard.ApplyEffects();
     }
   }
 

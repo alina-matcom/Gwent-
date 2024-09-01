@@ -32,6 +32,46 @@ public class GameController : Singleton<GameController>
         string dslFilePath = @"C:\Gwent ++\Gwent-test\Assets\StreamingAssets\deck.dsl";
         // Leer y procesar el contenido del archivo
         List<CardOld> cards = LoadCardsFromDSL(dslFilePath);
+        // Acceder a la primera carta de la lista
+        /*if (cards.Count > 0)
+        {
+            CardOld firstCardOld = cards[0];
+
+            // Convertir la carta a tipo Card
+            Card firstCard = firstCardOld as Card;
+
+            if (firstCard != null)
+            {
+                // Acceder al primer EffectActionResult de la propiedad OnActivation de la carta
+                if (firstCard.OnActivation.Count > 0)
+                {
+                    EffectActionResult firstEffectActionResult = firstCard.OnActivation[0];
+
+                    // Acceder a la propiedad SelectorResult del EffectActionResult
+                    SelectorResult selectorResult = firstEffectActionResult.SelectorResult;
+
+                    // Evaluar el Predicate del SelectorResult pasando la carta como parámetro
+                    bool predicateResult = selectorResult.Predicate(firstCard);
+
+                    // Imprimir el resultado booleano del Predicate
+                    Console.WriteLine($"El resultado del predicado es: {predicateResult}");
+                }
+                else
+                {
+                    Console.WriteLine("La carta no tiene efectos de activación.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("La primera carta no es de tipo Card.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No se encontraron cartas.");
+        }*/
+
+        
 
         // Asignar las cartas a los mazos de los jugadores
         playerDeck.deck = ScriptableObject.CreateInstance<Deck>();
@@ -43,12 +83,12 @@ public class GameController : Singleton<GameController>
 
         foreach (var card in playerCards)
         {
-            card.owner = 0; // Asignar owner 0 para el jugador
+            card.Owner = 0; // Asignar owner 0 para el jugador
         }
 
         foreach (var card in enemyCards)
         {
-            card.owner = 1; // Asignar owner 1 para el enemigo
+            card.Owner = 1; // Asignar owner 1 para el enemigo
         }
 
         playerDeck.deck.originalCards = playerCards;

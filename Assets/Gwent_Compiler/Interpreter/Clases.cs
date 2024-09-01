@@ -13,18 +13,18 @@ namespace GwentInterpreters
         public double Power { get; set; }
         public List<string> Range { get; set; }
         public List<EffectActionResult> OnActivation { get; }  // Cambiado de EffectAction a EffectActionResult
-
+        
         private readonly double powerOriginal;
 
         public Card(string type, string name, string faction, double power, List<string> range, List<EffectActionResult> onActivation, int owner)
         {
             Type = type;
-            this.name = name;  // Asignar el valor del parámetro name a la propiedad name de CardOld
+            Name = name;  // Asignar el valor del parámetro name a la propiedad name de CardOld
             Faction = faction;
             Power = power;
             Range = range;
             OnActivation = onActivation;
-            this.owner = owner;  // Asignar el valor del parámetro owner a la propiedad owner de CardOld
+            Owner = owner;  // Asignar el valor del parámetro owner a la propiedad owner de CardOld
 
             // Inicializar las propiedades heredadas con valores por defecto
             description = "Carta creada por mi compilador";
@@ -76,41 +76,122 @@ namespace GwentInterpreters
                 return BoardSlot.None;
             }
         }
+        public void ApplyEffects()
+        {
+            foreach (var effectActionResult in OnActivation)
+            {
+                ApplyEffectActionResult(effectActionResult, null);
+            }
+        }
+        private void ApplyEffectActionResult(EffectActionResult effectActionResult, List<CardOld> parentTargets)
+        {
+            // Obtener las cartas objetivo usando el selector
+            List<CardOld> targets = GetCardsFromSelectorResult(effectActionResult.SelectorResult, parentTargets);
 
+            // Invocar el efecto
+            effectActionResult.EffectInstance.Invoke(new Interpreter(), new Iterable(targets), new Context());
+
+            // Si hay un post-action, aplicarlo recursivamente
+            if (effectActionResult.PostActionResult != null)
+            {
+                ApplyEffectActionResult(effectActionResult.PostActionResult, targets);
+            }
+        }
+
+        private List<CardOld> GetCardsFromSelectorResult(SelectorResult selectorResult, List<CardOld> parentTargets)
+        {
+            if (selectorResult == null)
+            {
+                throw new ArgumentNullException(nameof(selectorResult), "El selectorResult no puede ser null.");
+            }
+
+            if (selectorResult.Source == null)
+            {
+                throw new ArgumentNullException(nameof(selectorResult.Source), "El Source del selectorResult no puede ser null.");
+            }
+
+            if (selectorResult.Predicate == null)
+            {
+                throw new ArgumentNullException(nameof(selectorResult.Predicate), "El Predicate del selectorResult no puede ser null.");
+            }
+            // Obtener la fuente de cartas según el Source del SelectorResult
+            Iterable cardsSource;
+            switch (selectorResult.Source)
+            {
+                case "hand":
+                    cardsSource = Context.HandOfPlayer(0);
+                    break;
+                case "otherHand":
+                    cardsSource = Context.HandOfPlayer(1);
+                    break;
+                case "deck":
+                    cardsSource = Context.DeckOfPlayer(0);
+                    break;
+                case "otherDeck":
+                    cardsSource = Context.DeckOfPlayer(1);
+                    break;
+                case "field":
+                    cardsSource = Context.FieldOfPlayer(0);
+                    break;
+                case "otherField":
+                    cardsSource = Context.FieldOfPlayer(1);
+                    break;
+                case "parent":
+                    cardsSource = new Iterable(parentTargets);
+                    break;
+                case "board":
+                    cardsSource = Context.Board;
+                    break;
+                default:
+                    throw new ArgumentException($"Source '{selectorResult.Source}' no es válido.");
+            }
+
+            // Aplicar el predicado para filtrar las cartas
+            List<CardOld> filteredCards = cardsSource.Find(selectorResult.Predicate);
+
+            // Si Single es true, devolver solo una lista con el primer elemento que cumpla el predicado
+            if (selectorResult.Single && filteredCards.Count > 0)
+            {
+                return new List<CardOld> { filteredCards[0] };
+            }
+
+            // Devolver la lista completa de cartas que cumplan el predicado
+            return filteredCards;
+        }
         public override string ToString()
         {
-            return $"Card: {name}, Type: {Type}, Faction: {Faction}, Power: {Power}, Range: [{string.Join(", ", Range)}], Owner: {owner}";
+            return $"Card: {name}, Type: {Type}, Faction: {Faction}, Power: {Power}, Range: [{string.Join(", ", Range)}], Owner: {Owner}";
         }
     }
 
     public class Context
     {
-        public int TriggerPlayer
+        public static int TriggerPlayer
         {
             get { return GameController.Instance.TriggerPlayer; }
         }
 
-        public Iterable Board
+        public static Iterable Board
         {
             get { return new Iterable(GameController.Instance.Board); }
         }
 
-        public Iterable HandOfPlayer(int player)
+        public static Iterable HandOfPlayer(int player)
         {
             return new Iterable(GameController.Instance.HandOfPlayer(player));
         }
 
-        public Iterable FieldOfPlayer(int player)
+        public static Iterable FieldOfPlayer(int player)
         {
             return new Iterable(GameController.Instance.FieldOfPlayer(player));
         }
 
-        public Iterable GraveyardOfPlayer(int player)
+        public static Iterable GraveyardOfPlayer(int player)
         {
             return new Iterable(GameController.Instance.GraveyardOfPlayer(player));
         }
 
-        public Iterable DeckOfPlayer(int player)
+        public static Iterable DeckOfPlayer(int player)
         {
             return new Iterable(GameController.Instance.DeckOfPlayer(player));
         }
@@ -146,8 +227,15 @@ namespace GwentInterpreters
         IEnumerator IEnumerable.GetEnumerator() => cards.GetEnumerator();
 
         // Métodos adicionales
-        public List<CardOld> Find(Func<CardOld, bool> predicate) => cards.Where(predicate).ToList();
+        public List<CardOld> Find(Func<CardOld, bool> predicate)
+        {
+            if (predicate == null)
+            {
+                throw new ArgumentNullException(nameof(predicate), "El predicado no puede ser null.");
+            }
 
+            return cards.Where(predicate).ToList();
+        }
         public void Push(CardOld card) => cards.Add(card);
 
         public void SendBottom(CardOld card) => cards.Insert(0, card);

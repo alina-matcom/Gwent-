@@ -99,7 +99,7 @@ namespace GwentInterpreters
         {
             Console.WriteLine($"Visiting SelectorExpr: {expr}");
             // Evaluar el Predicate
-            var predicateFunction = (Func<Card, bool>)VisitPredicate(expr.Predicate);
+            var predicateFunction = (Func<CardOld, bool>)VisitPredicate(expr.Predicate);
 
             // Crear y devolver la instancia de SelectorResult
             return new SelectorResult(expr.Source, expr.Single, predicateFunction);
@@ -109,7 +109,7 @@ namespace GwentInterpreters
         {
             Console.WriteLine($"Visiting Predicate: {predicate}");
             // Devolver una lambda que acepte una Card y devuelva un bool
-            return new Func<Card, bool>(card =>
+            return new Func<CardOld, bool>(card =>
             {
                 // Crear un nuevo intérprete temporal
                 Interpreter tempInterpreter = new Interpreter();
