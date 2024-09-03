@@ -83,13 +83,13 @@ namespace GwentInterpreters
                 ApplyEffectActionResult(effectActionResult, null);
             }
         }
-        private void ApplyEffectActionResult(EffectActionResult effectActionResult, List<CardOld> parentTargets)
+        private void ApplyEffectActionResult(EffectActionResult effectActionResult, Iterable parentTargets)
         {
             // Obtener las cartas objetivo usando el selector
-            List<CardOld> targets = GetCardsFromSelectorResult(effectActionResult.SelectorResult, parentTargets);
+            Iterable targets = GetCardsFromSelectorResult(effectActionResult.SelectorResult, parentTargets);
 
             // Invocar el efecto
-            effectActionResult.EffectInstance.Invoke(new Interpreter(), new Iterable(targets), new Context());
+            effectActionResult.EffectInstance.Invoke(new Interpreter(), targets, new Context());
 
             // Si hay un post-action, aplicarlo recursivamente
             if (effectActionResult.PostActionResult != null)
@@ -98,7 +98,7 @@ namespace GwentInterpreters
             }
         }
 
-        private List<CardOld> GetCardsFromSelectorResult(SelectorResult selectorResult, List<CardOld> parentTargets)
+        private Iterable GetCardsFromSelectorResult(SelectorResult selectorResult, Iterable parentTargets)
         {
             if (selectorResult == null)
             {
@@ -137,7 +137,7 @@ namespace GwentInterpreters
                     cardsSource = Context.FieldOfPlayer(1);
                     break;
                 case "parent":
-                    cardsSource = new Iterable(parentTargets);
+                    cardsSource = parentTargets;
                     break;
                 case "board":
                     cardsSource = Context.Board;
@@ -147,252 +147,253 @@ namespace GwentInterpreters
             }
 
             // Aplicar el predicado para filtrar las cartas
-            List<CardOld> filteredCards = cardsSource.Find(selectorResult.Predicate);
+            Iterable filteredCards = cardsSource.Find(selectorResult.Predicate);
+
 
             // Si Single es true, devolver solo una lista con el primer elemento que cumpla el predicado
             if (selectorResult.Single && filteredCards.Count > 0)
             {
-                return new List<CardOld> { filteredCards[0] };
+                return new Iterable(new List<CardOld> { filteredCards[0] });
             }
 
             // Devolver la lista completa de cartas que cumplan el predicado
             return filteredCards;
         }
 
-        public override CardOld Clone()
-        {
-            // Clonar superficialmente las propiedades de CardOld
-            Card clonedCard = (Card)base.Clone();
+    public override CardOld Clone()
+    {
+        // Clonar superficialmente las propiedades de CardOld
+        Card clonedCard = (Card)base.Clone();
 
-            // Clonar profundamente las propiedades específicas de Card
-            clonedCard.Range = new List<string>(Range);
+        // Clonar profundamente las propiedades específicas de Card
+        clonedCard.Range = new List<string>(Range);
 
-            // OnActivation se comparte entre las instancias clonadas
-            clonedCard.OnActivation = OnActivation;
+        // OnActivation se comparte entre las instancias clonadas
+        clonedCard.OnActivation = OnActivation;
 
-            return clonedCard;
-        }
-        public override string ToString()
-        {
-            return $"Card: {name}, Type: {Type}, Faction: {Faction}, Power: {Power}, Range: [{string.Join(", ", Range)}], Owner: {Owner}";
-        }
+        return clonedCard;
+    }
+    public override string ToString()
+    {
+        return $"Card: {name}, Type: {Type}, Faction: {Faction}, Power: {Power}, Range: [{string.Join(", ", Range)}], Owner: {Owner}";
+    }
+}
+
+public class Context
+{
+    public static int TriggerPlayer
+    {
+        get { return GameController.Instance.TriggerPlayer; }
     }
 
-    public class Context
+    public static Iterable Board
     {
-        public static int TriggerPlayer
-        {
-            get { return GameController.Instance.TriggerPlayer; }
-        }
-
-        public static Iterable Board
-        {
-            get { return new Iterable(GameController.Instance.Board); }
-        }
-
-        public static Iterable HandOfPlayer(int player)
-        {
-            return new Iterable(GameController.Instance.HandOfPlayer(player));
-        }
-
-        public static Iterable FieldOfPlayer(int player)
-        {
-            return new Iterable(GameController.Instance.FieldOfPlayer(player));
-        }
-
-        public static Iterable GraveyardOfPlayer(int player)
-        {
-            return new Iterable(GameController.Instance.GraveyardOfPlayer(player));
-        }
-
-        public static Iterable DeckOfPlayer(int player)
-        {
-            return new Iterable(GameController.Instance.DeckOfPlayer(player));
-        }
-    }
-    public class Iterable : IList<CardOld>
-    {
-        private List<CardOld> cards;
-
-        public Iterable()
-        {
-            cards = new List<CardOld>();
-        }
-        // Nuevo constructor que recibe una lista de cartas
-        public Iterable(List<CardOld> initialCards)
-        {
-            cards = new List<CardOld>(initialCards);
-        }
-
-        // Implementación de IList<Card>
-        public CardOld this[int index] { get => cards[index]; set => cards[index] = value; }
-        public int Count => cards.Count;
-        public bool IsReadOnly => false;
-
-        public void Add(CardOld card) => cards.Add(card);
-        public void Clear() => cards.Clear();
-        public bool Contains(CardOld card) => cards.Contains(card);
-        public void CopyTo(CardOld[] array, int arrayIndex) => cards.CopyTo(array, arrayIndex);
-        public IEnumerator<CardOld> GetEnumerator() => cards.GetEnumerator();
-        public int IndexOf(CardOld card) => cards.IndexOf(card);
-        public void Insert(int index, CardOld card) => cards.Insert(index, card);
-        public bool Remove(CardOld card) => cards.Remove(card);
-        public void RemoveAt(int index) => cards.RemoveAt(index);
-        IEnumerator IEnumerable.GetEnumerator() => cards.GetEnumerator();
-
-        // Métodos adicionales
-        public List<CardOld> Find(Func<CardOld, bool> predicate)
-        {
-            if (predicate == null)
-            {
-                throw new ArgumentNullException(nameof(predicate), "El predicado no puede ser null.");
-            }
-
-            return cards.Where(predicate).ToList();
-        }
-        public void Push(CardOld card) => cards.Add(card);
-
-        public void SendBottom(CardOld card) => cards.Insert(0, card);
-
-        public CardOld Pop()
-        {
-            if (cards.Count == 0)
-                throw new InvalidOperationException("No hay cartas en la colección.");
-
-            CardOld card = cards[cards.Count - 1];
-            cards.RemoveAt(cards.Count - 1);
-            return card;
-        }
-
-        public void Shuffle()
-        {
-            System.Random rng = new System.Random();
-            int n = cards.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                CardOld value = cards[k];
-                cards[k] = cards[n];
-                cards[n] = value;
-            }
-        }
+        get { return new Iterable(GameController.Instance.Board); }
     }
 
-    public class CallableMethod
+    public static Iterable HandOfPlayer(int player)
     {
-        private readonly object _instance;
-        private readonly MethodInfo _method;
+        return new Iterable(GameController.Instance.HandOfPlayer(player));
+    }
 
-        public CallableMethod(object instance, MethodInfo method)
+    public static Iterable FieldOfPlayer(int player)
+    {
+        return new Iterable(GameController.Instance.FieldOfPlayer(player));
+    }
+
+    public static Iterable GraveyardOfPlayer(int player)
+    {
+        return new Iterable(GameController.Instance.GraveyardOfPlayer(player));
+    }
+
+    public static Iterable DeckOfPlayer(int player)
+    {
+        return new Iterable(GameController.Instance.DeckOfPlayer(player));
+    }
+}
+public class Iterable : IList<CardOld>
+{
+    private List<CardOld> cards;
+
+    public Iterable()
+    {
+        cards = new List<CardOld>();
+    }
+    // Nuevo constructor que recibe una lista de cartas
+    public Iterable(List<CardOld> initialCards)
+    {
+        cards = new List<CardOld>(initialCards);
+    }
+
+    // Implementación de IList<Card>
+    public CardOld this[int index] { get => cards[index]; set => cards[index] = value; }
+    public int Count => cards.Count;
+    public bool IsReadOnly => false;
+
+    public void Add(CardOld card) => cards.Add(card);
+    public void Clear() => cards.Clear();
+    public bool Contains(CardOld card) => cards.Contains(card);
+    public void CopyTo(CardOld[] array, int arrayIndex) => cards.CopyTo(array, arrayIndex);
+    public IEnumerator<CardOld> GetEnumerator() => cards.GetEnumerator();
+    public int IndexOf(CardOld card) => cards.IndexOf(card);
+    public void Insert(int index, CardOld card) => cards.Insert(index, card);
+    public bool Remove(CardOld card) => cards.Remove(card);
+    public void RemoveAt(int index) => cards.RemoveAt(index);
+    IEnumerator IEnumerable.GetEnumerator() => cards.GetEnumerator();
+
+    // Métodos adicionales
+    public Iterable Find(Func<CardOld, bool> predicate)
+    {
+        if (predicate == null)
         {
-            _instance = instance;
-            _method = method;
+            throw new ArgumentNullException(nameof(predicate), "El predicado no puede ser null.");
         }
 
-        public bool CanInvoke(List<object> arguments, out string errorMessage)
+        return new Iterable(cards.Where(predicate).ToList());
+    }
+    public void Push(CardOld card) => cards.Add(card);
+
+    public void SendBottom(CardOld card) => cards.Insert(0, card);
+
+    public CardOld Pop()
+    {
+        if (cards.Count == 0)
+            throw new InvalidOperationException("No hay cartas en la colección.");
+
+        CardOld card = cards[cards.Count - 1];
+        cards.RemoveAt(cards.Count - 1);
+        return card;
+    }
+
+    public void Shuffle()
+    {
+        System.Random rng = new System.Random();
+        int n = cards.Count;
+        while (n > 1)
         {
-            var parameters = _method.GetParameters();
-            if (parameters.Length != arguments.Count)
-            {
-                errorMessage = $"Se esperaban {parameters.Length} argumentos, pero se obtuvieron {arguments.Count}.";
-                return false;
-            }
+            n--;
+            int k = rng.Next(n + 1);
+            CardOld value = cards[k];
+            cards[k] = cards[n];
+            cards[n] = value;
+        }
+    }
+}
 
-            for (int i = 0; i < arguments.Count; i++)
-            {
-                var arg = arguments[i];
-                var paramType = parameters[i].ParameterType;
+public class CallableMethod
+{
+    private readonly object _instance;
+    private readonly MethodInfo _method;
 
-                if (arg != null)
+    public CallableMethod(object instance, MethodInfo method)
+    {
+        _instance = instance;
+        _method = method;
+    }
+
+    public bool CanInvoke(List<object> arguments, out string errorMessage)
+    {
+        var parameters = _method.GetParameters();
+        if (parameters.Length != arguments.Count)
+        {
+            errorMessage = $"Se esperaban {parameters.Length} argumentos, pero se obtuvieron {arguments.Count}.";
+            return false;
+        }
+
+        for (int i = 0; i < arguments.Count; i++)
+        {
+            var arg = arguments[i];
+            var paramType = parameters[i].ParameterType;
+
+            if (arg != null)
+            {
+                if (arg.GetType() == typeof(double) && IsNumericType(paramType))
                 {
-                    if (arg.GetType() == typeof(double) && IsNumericType(paramType))
+                    try
                     {
-                        try
-                        {
-                            Convert.ChangeType(arg, paramType);
-                        }
-                        catch
-                        {
-                            errorMessage = $"El argumento {i + 1} no puede ser convertido al tipo {paramType.Name}.";
-                            return false;
-                        }
+                        Convert.ChangeType(arg, paramType);
                     }
-                    else if (!paramType.IsAssignableFrom(arg.GetType()))
+                    catch
                     {
                         errorMessage = $"El argumento {i + 1} no puede ser convertido al tipo {paramType.Name}.";
                         return false;
                     }
                 }
-            }
-
-            errorMessage = null;
-            return true;
-        }
-
-        private bool IsNumericType(Type type)
-        {
-            switch (Type.GetTypeCode(type))
-            {
-                case TypeCode.Byte:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.Single:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                    return true;
-                default:
+                else if (!paramType.IsAssignableFrom(arg.GetType()))
+                {
+                    errorMessage = $"El argumento {i + 1} no puede ser convertido al tipo {paramType.Name}.";
                     return false;
+                }
             }
         }
 
-        public object Call(List<object> arguments)
+        errorMessage = null;
+        return true;
+    }
+
+    private bool IsNumericType(Type type)
+    {
+        switch (Type.GetTypeCode(type))
         {
-            var parameters = _method.GetParameters();
-            var convertedArgs = new object[arguments.Count];
-            for (int i = 0; i < arguments.Count; i++)
-            {
-                var arg = arguments[i];
-                var paramType = parameters[i].ParameterType;
-                try
-                {
-                    Debug.Log($"Intentando convertir el argumento '{arg}' al tipo '{paramType}'");
-
-                    // Verificar si el tipo del argumento es asignable al tipo del parámetro
-                    if (paramType.IsAssignableFrom(arg.GetType()))
-                    {
-                        convertedArgs[i] = arg;
-                    }
-                    else
-                    {
-                        convertedArgs[i] = Convert.ChangeType(arg, paramType);
-                    }
-                }
-                catch (InvalidCastException e)
-                {
-                    Debug.LogError($"Error de conversión: No se puede convertir el argumento '{arg}' al tipo '{paramType}'. Detalles: {e.Message}");
-                }
-                catch (FormatException e)
-                {
-                    Debug.LogError($"Error de formato: El argumento '{arg}' no tiene el formato correcto para el tipo '{paramType}'. Detalles: {e.Message}");
-                }
-                catch (ArgumentNullException e)
-                {
-                    Debug.LogError($"Error de argumento nulo: El argumento es nulo. Detalles: {e.Message}");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"Error inesperado: {e.Message}");
-                }
-            }
-
-            return _method.Invoke(_instance, convertedArgs);
+            case TypeCode.Byte:
+            case TypeCode.Decimal:
+            case TypeCode.Double:
+            case TypeCode.Int16:
+            case TypeCode.Int32:
+            case TypeCode.Int64:
+            case TypeCode.SByte:
+            case TypeCode.Single:
+            case TypeCode.UInt16:
+            case TypeCode.UInt32:
+            case TypeCode.UInt64:
+                return true;
+            default:
+                return false;
         }
     }
+
+    public object Call(List<object> arguments)
+    {
+        var parameters = _method.GetParameters();
+        var convertedArgs = new object[arguments.Count];
+        for (int i = 0; i < arguments.Count; i++)
+        {
+            var arg = arguments[i];
+            var paramType = parameters[i].ParameterType;
+            try
+            {
+                Debug.Log($"Intentando convertir el argumento '{arg}' al tipo '{paramType}'");
+
+                // Verificar si el tipo del argumento es asignable al tipo del parámetro
+                if (paramType.IsAssignableFrom(arg.GetType()))
+                {
+                    convertedArgs[i] = arg;
+                }
+                else
+                {
+                    convertedArgs[i] = Convert.ChangeType(arg, paramType);
+                }
+            }
+            catch (InvalidCastException e)
+            {
+                Debug.LogError($"Error de conversión: No se puede convertir el argumento '{arg}' al tipo '{paramType}'. Detalles: {e.Message}");
+            }
+            catch (FormatException e)
+            {
+                Debug.LogError($"Error de formato: El argumento '{arg}' no tiene el formato correcto para el tipo '{paramType}'. Detalles: {e.Message}");
+            }
+            catch (ArgumentNullException e)
+            {
+                Debug.LogError($"Error de argumento nulo: El argumento es nulo. Detalles: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Error inesperado: {e.Message}");
+            }
+        }
+
+        return _method.Invoke(_instance, convertedArgs);
+    }
+}
 
 }
