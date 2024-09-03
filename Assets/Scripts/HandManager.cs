@@ -9,7 +9,7 @@ public class HandManager : MonoBehaviour
     public float cardWidth = 170f; // Width of each card
     public int maxCardsInHand = 10;
     public int owner;
-
+    private List<CardOld> cardsInHand = new List<CardOld>();
     public void AddCard(CardOld card)
     {
         if (card == null)
@@ -27,6 +27,7 @@ public class HandManager : MonoBehaviour
         newCard.card = card;
         newCard.SetCard(card);
         newCard.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        cardsInHand.Add(card); // Agregar la carta a la lista privada
 
         StartCoroutine(AdjustCardPositions());
     }
@@ -48,18 +49,9 @@ public class HandManager : MonoBehaviour
     {
         return transform.childCount;
     }
-    public List<CardOld> GetCardsInHand()
+     public List<CardOld> GetCardsInHand()
     {
-        List<CardOld> cardsInHand = new List<CardOld>();
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            HandCardDisplay cardDisplay = transform.GetChild(i).GetComponent<HandCardDisplay>();
-            if (cardDisplay != null)
-            {
-                cardsInHand.Add(cardDisplay.card);
-            }
-        }
-        return cardsInHand;
+        return new List<CardOld>(cardsInHand); // Devolver la lista privada
     }
 
     IEnumerator AdjustCardPositions()

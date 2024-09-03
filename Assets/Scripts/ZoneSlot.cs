@@ -11,6 +11,8 @@ public class ZoneSlot : Slot
   public GameObject slot;
   private readonly float cardWidth = 100f;
   private readonly float zoneWidth = 600f;
+  private List<CardOld> cards = new List<CardOld>();
+
 
   public List<CardDisplay> GetCards()
   {
@@ -24,6 +26,11 @@ public class ZoneSlot : Slot
     return cards;
   }
 
+  // Nuevo método para devolver la lista de cartas CardOld
+  public List<CardOld> GetCardOlds()
+  {
+    return cards;
+  }
   public override void PlayCard(CardOld card)
   {
     if (card == null)
@@ -48,6 +55,7 @@ public class ZoneSlot : Slot
       cardDisplay.SetCard(newCard);
       cardDisplay.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
       cardDisplay.transform.localPosition = new Vector3(0, 0, 0);
+      cards.Add(newCard); // Agregar la carta a la lista de CardOld
       StartCoroutine(AdjustCardPositions());
       // Llamada al método para aplicar el efecto de la carta
       newCard.ApplyEffects();

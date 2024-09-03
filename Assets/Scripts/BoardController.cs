@@ -19,6 +19,8 @@ public class BoardController : Singleton<BoardController>
 
     public static event System.Action OnScoreUpdateNeeded;
 
+    private List<CardOld> allCards = new List<CardOld>();
+
     public void Start()
     {
         playerScore.SetPower(0);
@@ -32,59 +34,60 @@ public class BoardController : Singleton<BoardController>
     }
 
     public void PlayCard(CardOld card, Slot slot, int turn)
-{
-    if (card is UnitCard unitCard)
     {
-        switch (unitCard.type)
+        // Añadir la carta a la lista de todas las cartas
+        allCards.Add(card);
+        if (card is UnitCard unitCard)
         {
-            case UnitType.Melee:
-                (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(unitCard);
-                break;
+            switch (unitCard.type)
+            {
+                case UnitType.Melee:
+                    (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(unitCard);
+                    break;
 
-            case UnitType.Ranged:
-                (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(unitCard);
-                break;
+                case UnitType.Ranged:
+                    (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(unitCard);
+                    break;
 
-            case UnitType.Siege:
-                (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(unitCard);
-                break;
+                case UnitType.Siege:
+                    (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(unitCard);
+                    break;
+            }
         }
-    }
-    else if (card is FieldCard)
-    {
-        if (slot is FieldZone)
+        else if (card is FieldCard)
+        {
+            if (slot is FieldZone)
+            {
+                slot.PlayCard(card);
+            }
+            else
+            {
+                Debug.Log("FieldCard can only be played in FieldZone.");
+            }
+        }
+        else if (card is Card newCard)
+        {
+            switch (newCard.GetBoardSlot())
+            {
+                case BoardSlot.MeleeZone:
+                    (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(newCard);
+                    break;
+
+                case BoardSlot.RangedZone:
+                    (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(newCard);
+                    break;
+
+                case BoardSlot.SiegeZone:
+                    (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(newCard);
+                    break;
+            }
+        }
+        else if (slot is BuffSlot)
         {
             slot.PlayCard(card);
         }
-        else
-        {
-            Debug.Log("FieldCard can only be played in FieldZone.");
-        }
+        UpdateScore();
     }
-    else if (card is Card newCard)
-    {
-        switch (newCard.GetBoardSlot())
-        {
-            case BoardSlot.MeleeZone:
-                (turn == 0 ? playerMeleeZone : enemyMeleeZone).PlayCard(newCard);
-                break;
-
-            case BoardSlot.RangedZone:
-                (turn == 0 ? playerRangedZone : enemyRangedZone).PlayCard(newCard);
-                break;
-
-            case BoardSlot.SiegeZone:
-                (turn == 0 ? playerSiegeZone : enemySiegeZone).PlayCard(newCard);
-                break;
-        }
-    }
-    else if (slot is BuffSlot)
-    {
-        slot.PlayCard(card);
-    }
-
-    UpdateScore();
-}
 
     public void UpdateZonesPower()
     {
@@ -111,7 +114,7 @@ public class BoardController : Singleton<BoardController>
             playerSiegeZone.GetRowPower();
     }
 
-    public double  GetEnemyScore()
+    public double GetEnemyScore()
     {
         return
             enemyMeleeZone.GetRowPower() +
@@ -151,15 +154,6 @@ public class BoardController : Singleton<BoardController>
 
     public List<CardOld> GetAllCards()
     {
-        List<CardOld> allCards = new List<CardOld>();
-
-        allCards.AddRange(playerMeleeZone.GetCards());
-        allCards.AddRange(playerRangedZone.GetCards());
-        allCards.AddRange(playerSiegeZone.GetCards());
-        allCards.AddRange(enemyMeleeZone.GetCards());
-        allCards.AddRange(enemyRangedZone.GetCards());
-        allCards.AddRange(enemySiegeZone.GetCards());
-
         return allCards;
     }
 }

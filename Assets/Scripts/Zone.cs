@@ -75,16 +75,9 @@ public class Zone : MonoBehaviour
         powerDisplay.SetPower(rowPower);
         hasEffectBeenApplied = false; // Asegúrate de restablecer el estado del efecto aplicado
     }
+   // Modificado para llamar a GetCardOlds de unitsSlot
     public List<CardOld> GetCards()
     {
-        List<CardDisplay> cardDisplays = unitsSlot.GetCards();
-        List<CardOld> cards = new List<CardOld>();
-
-        foreach (CardDisplay cardDisplay in cardDisplays)
-        {
-            cards.Add(cardDisplay.card);
-        }
-
-        return cards;
+        return unitsSlot.GetCardOlds();
     }
 }
