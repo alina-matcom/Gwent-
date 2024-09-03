@@ -6,7 +6,7 @@ public class UnitCard : CardOld
 {
     public UnitType type;
     public int originalPower;
-    public int power;
+    public double power;
     public string effect;
 
     public override void Reset()

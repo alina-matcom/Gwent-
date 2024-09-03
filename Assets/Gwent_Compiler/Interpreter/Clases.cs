@@ -12,8 +12,8 @@ namespace GwentInterpreters
         public string Type { get; set; }
         public double Power { get; set; }
         public List<string> Range { get; set; }
-        public List<EffectActionResult> OnActivation { get; }  // Cambiado de EffectAction a EffectActionResult
-        
+        public List<EffectActionResult> OnActivation { get; set; }  // Cambiado de EffectAction a EffectActionResult
+
         private readonly double powerOriginal;
 
         public Card(string type, string name, string faction, double power, List<string> range, List<EffectActionResult> onActivation, int owner)
@@ -157,6 +157,20 @@ namespace GwentInterpreters
 
             // Devolver la lista completa de cartas que cumplan el predicado
             return filteredCards;
+        }
+
+        public override CardOld Clone()
+        {
+            // Clonar superficialmente las propiedades de CardOld
+            Card clonedCard = (Card)base.Clone();
+
+            // Clonar profundamente las propiedades específicas de Card
+            clonedCard.Range = new List<string>(Range);
+
+            // OnActivation se comparte entre las instancias clonadas
+            clonedCard.OnActivation = OnActivation;
+
+            return clonedCard;
         }
         public override string ToString()
         {

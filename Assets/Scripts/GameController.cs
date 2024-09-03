@@ -58,17 +58,18 @@ public class GameController : Singleton<GameController>
         enemyDeck.deck = ScriptableObject.CreateInstance<Deck>();
 
         // Modificar el owner de las cartas del jugador y del enemigo
-        List<CardOld> playerCards = new List<CardOld>(cards);
-        List<CardOld> enemyCards = new List<CardOld>(cards);
+        List<CardOld> playerCards = new List<CardOld>();
+        List<CardOld> enemyCards = new List<CardOld>();
 
-        foreach (var card in playerCards)
+        foreach (var card in cards)
         {
-            card.Owner = 0; // Asignar owner 0 para el jugador
-        }
+            var playerCard = card.Clone();
+            playerCard.Owner = 0; // Asignar owner 0 para el jugador
+            playerCards.Add(playerCard);
 
-        foreach (var card in enemyCards)
-        {
-            card.Owner = 1; // Asignar owner 1 para el enemigo
+            var enemyCard = card.Clone();
+            enemyCard.Owner = 1; // Asignar owner 1 para el enemigo
+            enemyCards.Add(enemyCard);
         }
 
         playerDeck.deck.originalCards = playerCards;

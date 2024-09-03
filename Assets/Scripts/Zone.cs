@@ -52,6 +52,19 @@ public class Zone : MonoBehaviour
             hasEffectBeenApplied = true;
         }
 
+        // Actualizar el poder de cada carta visualmente
+        foreach (CardDisplay cardDisplay in unitsSlot.GetCards())
+        {
+            if (cardDisplay.card is UnitCard unitCard)
+            {
+                cardDisplay.SetPower(unitCard.power);
+            }
+            else if (cardDisplay.card is Card cardInstance)
+            {
+                cardDisplay.SetPower(cardInstance.Power);
+            }
+        }
+
         rowPower = unitsSlot.GetRowPower();
         powerDisplay.SetPower(rowPower);
     }

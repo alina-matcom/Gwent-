@@ -22,7 +22,7 @@ public class LiderCard : CardOld
         if (unitCard != null)
         {
           Debug.Log("sabroso");
-          int doubledPower = unitCard.power * 2;
+          double doubledPower = unitCard.power * 2;
           card.SetPower(doubledPower);
         }
       }
