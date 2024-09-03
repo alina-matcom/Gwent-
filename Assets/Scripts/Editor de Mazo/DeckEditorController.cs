@@ -40,7 +40,6 @@ public class DeckEditorController : MonoBehaviour
     private void SaveDeck(string deckText)
     {
         File.WriteAllText(deckFilePath, deckText);
-        Debug.Log("Mazo guardado en: " + deckFilePath);
         deckEditorPanel.SetActive(false); // Cierra el panel después de guardar
         // Disparar el evento
         OnDeckSaved?.Invoke();

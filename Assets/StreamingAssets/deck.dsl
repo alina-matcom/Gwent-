@@ -12,6 +12,19 @@ effect {
   };
 }
 
+effect {
+  Name: "ReturnToDeck",
+  Action: (targets, context) => {
+    for target in targets {
+      owner = target.Owner;
+      deck = context.DeckOfPlayer(owner);
+      deck.Push(target);
+      deck.Shuffle();
+      context.Board.Remove(target);
+    };
+  };
+}
+
 card {
   Type: "Oro",
   Name: "Beluga",
@@ -29,6 +42,16 @@ card {
         Single: false,
         Predicate: (unit) => unit.Faction == "Northern Realms"
       },
+      PostAction: {
+        Effect:{
+          Name: "ReturnToDeck",
+        },
+        Selector: {
+          Source: "parent",
+          Single: false,
+          Predicate: (unit) => unit.Power < 10
+        },
+      }
     }
   ]
 }

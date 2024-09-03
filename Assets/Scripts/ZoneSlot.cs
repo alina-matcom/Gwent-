@@ -49,7 +49,6 @@ public class ZoneSlot : Slot
       cardDisplay.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
       cardDisplay.transform.localPosition = new Vector3(0, 0, 0);
       StartCoroutine(AdjustCardPositions());
-      Debug.Log("Se ha jugado una carta de tipo Card.");
       // Llamada al método para aplicar el efecto de la carta
       newCard.ApplyEffects();
     }

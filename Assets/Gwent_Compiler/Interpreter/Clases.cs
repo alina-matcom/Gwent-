@@ -359,7 +359,36 @@ namespace GwentInterpreters
             {
                 var arg = arguments[i];
                 var paramType = parameters[i].ParameterType;
-                convertedArgs[i] = Convert.ChangeType(arg, paramType);
+                try
+                {
+                    Debug.Log($"Intentando convertir el argumento '{arg}' al tipo '{paramType}'");
+
+                    // Verificar si el tipo del argumento es asignable al tipo del parámetro
+                    if (paramType.IsAssignableFrom(arg.GetType()))
+                    {
+                        convertedArgs[i] = arg;
+                    }
+                    else
+                    {
+                        convertedArgs[i] = Convert.ChangeType(arg, paramType);
+                    }
+                }
+                catch (InvalidCastException e)
+                {
+                    Debug.LogError($"Error de conversión: No se puede convertir el argumento '{arg}' al tipo '{paramType}'. Detalles: {e.Message}");
+                }
+                catch (FormatException e)
+                {
+                    Debug.LogError($"Error de formato: El argumento '{arg}' no tiene el formato correcto para el tipo '{paramType}'. Detalles: {e.Message}");
+                }
+                catch (ArgumentNullException e)
+                {
+                    Debug.LogError($"Error de argumento nulo: El argumento es nulo. Detalles: {e.Message}");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Error inesperado: {e.Message}");
+                }
             }
 
             return _method.Invoke(_instance, convertedArgs);

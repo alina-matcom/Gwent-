@@ -32,20 +32,17 @@ public class CardDisplay : MonoBehaviour
 
         card = newCard;
 
-        Debug.Log("Configurando carta: " + card.name);
-
         kindBorderImage.sprite = Resources.Load<Sprite>("card-border-" + card.kind.ToString().ToLower());
 
         string borderPath = "card-border-" + card.kind.ToString().ToLower();
-        Debug.Log("Loading border sprite from path: " + borderPath); // Registra la ruta intentada
         kindBorderImage.sprite = Resources.Load<Sprite>(borderPath);
 
         string bannerPath = card.kind.ToString().ToLower();
-        Debug.Log("Loading banner sprite from path: " + bannerPath); // Registra la ruta intentada
+        
         kindBannerImage.sprite = Resources.Load<Sprite>(bannerPath);
 
         string cardImagePath = "card-images/" + card.Image;
-        Debug.Log("Loading card image from path: " + cardImagePath); // Registra la ruta intentada
+    
         cardImage.sprite = Resources.Load<Sprite>(cardImagePath);
 
         if (card is UnitCard unitCard)
@@ -77,13 +74,13 @@ public class CardDisplay : MonoBehaviour
     {
         if (card is UnitCard unitCard)
         {
-            Debug.Log("Actualizando poder de la carta: " + unitCard.name + " a " + power);
+            
             unitCard.power = power;
             powerDisplay.SetPower(power);
         }
         else if (card is Card cardInstance)
         {
-            Debug.Log("Actualizando poder de la carta: " + cardInstance.name + " a " + power);
+            
             cardInstance.Power = power;
             powerDisplay.SetPower(power);
         }

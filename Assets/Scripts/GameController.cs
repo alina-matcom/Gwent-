@@ -133,8 +133,6 @@ public class GameController : Singleton<GameController>
             return;
         }
 
-        Debug.Log("Playing card: " + CardManager.Instance.selectedCard.card.name);
-
         BoardController.Instance.PlayCard(CardManager.Instance.selectedCard.card, slot, currentTurn);
         playerHandManager.RemoveCard(CardManager.Instance.selectedCard);
         CardManager.Instance.selectedCard = null;
