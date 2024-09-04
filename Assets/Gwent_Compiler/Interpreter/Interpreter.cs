@@ -584,6 +584,82 @@ namespace GwentInterpreters
             return null;
         }
 
+        public object VisitIndexExpression(IndexExpression expr)
+        {
+            Console.WriteLine($"Visiting IndexExpression: {expr}");
+
+            // Evaluar la lista
+            object list = Evaluate(expr.List);
+
+            // Evaluar el índice
+            object index = Evaluate(expr.Index);
+
+            // Verificar que la lista sea una instancia de Iterable
+            if (!(list is Iterable collection))
+            {
+                throw new RuntimeError(null, "El objeto no es una instancia de Iterable.");
+            }
+
+            // Verificar que el índice sea un número
+            if (!(index is double))
+            {
+                throw new RuntimeError(null, "El índice debe ser un número.");
+            }
+
+            // Convertir el índice a entero
+            int intIndex = (int)(double)index;
+
+            // Verificar que el índice esté dentro del rango
+            if (intIndex < 0 || intIndex >= collection.Count)
+            {
+                throw new RuntimeError(null, "Índice fuera de rango.");
+            }
+
+            // Devolver el elemento en el índice especificado
+            return collection[intIndex];
+        }
+        public object VisitSetIndexExpression(SetIndex expr)
+        {
+            Console.WriteLine($"Visiting SetIndexExpression: {expr}");
+
+            // Evaluar la lista
+            object list = Evaluate(expr.List);
+
+            // Evaluar el índice
+            object index = Evaluate(expr.Index);
+
+            // Evaluar el valor a asignar
+            object value = Evaluate(expr.Value);
+
+            // Verificar que la lista sea una instancia de Iterable
+            if (!(list is Iterable collection))
+            {
+                throw new RuntimeError(null, "El objeto no es una instancia de Iterable.");
+            }
+
+            // Verificar que el índice sea un número
+            if (!(index is double))
+            {
+                throw new RuntimeError(null, "El índice debe ser un número.");
+            }
+
+            // Convertir el índice a entero
+            int intIndex = (int)(double)index;
+
+            // Verificar que el índice esté dentro del rango
+            if (intIndex < 0 || intIndex >= collection.Count)
+            {
+                throw new RuntimeError(null, "Índice fuera de rango.");
+            }
+
+            // Asignar el valor en el índice especificado
+            collection[intIndex] = (CardOld)value;
+
+            // Devolver el valor asignado
+            return value;
+        }
+
+
         private void CheckNumberOperand(Token _operator, object operand)
         {
             if (operand is double) return;

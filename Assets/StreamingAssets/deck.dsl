@@ -13,15 +13,10 @@ effect {
 }
 
 effect {
-  Name: "ReturnToDeck",
+  Name: "ShuffleDeck",
   Action: (targets, context) => {
-    for target in targets {
-      owner = target.Owner;
-      deck = context.DeckOfPlayer(owner);
-      deck.Push(target);
-      deck.Shuffle();
-      context.Board.Remove(target);
-    };
+    carta=targets[0];
+    targets[0]= targets[1];
   };
 }
 
@@ -42,16 +37,26 @@ card {
         Single: false,
         Predicate: (unit) => unit.Faction == "Northern Realms"
       },
-      PostAction: {
-        Effect:{
-          Name: "ReturnToDeck",
-        },
-        Selector: {
-          Source: "parent",
-          Single: false,
-          Predicate: (unit) => unit.Power < 10
-        },
-      }
+    }
+  ]
+}
+
+card {
+  Type: "Plata",
+  Name: "Griffin",
+  Faction: "Northern Realms",
+  Power: 8,
+  Range: ["Melee"],
+  OnActivation: [
+    {
+      Effect: {
+        Name: "ShuffleDeck",
+      },
+      Selector: {
+        Source: "board",
+        Single: false,
+        Predicate: (unit) => unit.Faction == "Northern Realms"
+      },
     }
   ]
 }

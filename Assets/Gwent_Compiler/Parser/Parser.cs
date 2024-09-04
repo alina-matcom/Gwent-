@@ -553,6 +553,19 @@ namespace GwentInterpreters
 
                     return new Set(getExpr.Object, getExpr.Name, value);
                 }
+                else if (expr is IndexExpression indexExpr)
+                {
+                    if (equals.Type == TokenType.PLUS_EQUAL)
+                    {
+                        value = new BinaryExpression(indexExpr, new Token(TokenType.PLUS, "+", null, equals.Location), value);
+                    }
+                    else if (equals.Type == TokenType.MINUS_EQUAL)
+                    {
+                        value = new BinaryExpression(indexExpr, new Token(TokenType.MINUS, "-", null, equals.Location), value);
+                    }
+
+                    return new SetIndex(indexExpr.List, indexExpr.Index, value);
+                }
 
                 Error(equals, "Se esperaba un nombre de variable o una propiedad.");
             }
@@ -691,6 +704,10 @@ namespace GwentInterpreters
                     Token name = Consume(TokenType.IDENTIFIER, "Se esperaba el nombre de la propiedad después de '.'.");
                     expr = new Get(expr, name);
                 }
+                else if (Match(TokenType.LEFT_BRACKET))
+                {
+                    expr = FinishIndexing(expr);
+                }
                 else
                 {
                     break; // Salimos del bucle si no hay más llamadas ni accesos a propiedades
@@ -717,6 +734,12 @@ namespace GwentInterpreters
             return new Call(callee, paren, arguments);
         }
 
+        private Expression FinishIndexing(Expression list)
+        {
+            Expression index = Expression(); // Parse the index expression
+            Consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' después del índice.");
+            return new IndexExpression(list, index);
+        }
         private Expression Primary()
         {
             if (Match(TokenType.BOOLEAN, TokenType.NUMBER, TokenType.STRING))

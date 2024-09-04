@@ -23,6 +23,8 @@ namespace GwentInterpreters
             T VisitActionExpression(Action expr);
             T VisitPredicate(Predicate expr);
             T VisitEffectAction(EffectAction expr);
+            T VisitIndexExpression(IndexExpression expr);
+            T VisitSetIndexExpression(SetIndex expr); // Añadir este método
         }
 
         public abstract T Accept<T>(IVisitor<T> visitor);
@@ -385,6 +387,53 @@ namespace GwentInterpreters
         public override string ToString()
         {
             return $"EffectAction: {{ Effect: {Effect}, Selector: {Selector}, PostAction: {PostAction} }}";
+        }
+    }
+    // Nueva clase IndexExpression
+    public class IndexExpression : Expression
+    {
+        public Expression List { get; }
+        public Expression Index { get; }
+
+        public IndexExpression(Expression list, Expression index)
+        {
+            List = list;
+            Index = index;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitIndexExpression(this);
+        }
+
+        public override string ToString()
+        {
+            return $"{List}[{Index}]";
+        }
+    }
+
+    // Nueva clase para manejar la asignación a un índice en una lista
+    public class SetIndex : Expression
+    {
+        public Expression List { get; }
+        public Expression Index { get; }
+        public Expression Value { get; }
+
+        public SetIndex(Expression list, Expression index, Expression value)
+        {
+            List = list;
+            Index = index;
+            Value = value;
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitSetIndexExpression(this);
+        }
+
+        public override string ToString()
+        {
+            return $"{List}[{Index}] = {Value}";
         }
     }
 }
