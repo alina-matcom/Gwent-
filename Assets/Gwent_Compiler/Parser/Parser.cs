@@ -352,10 +352,37 @@ namespace GwentInterpreters
                 throw Error(identifierToken, $"Se esperaba la clave '{attributeName}', pero se encontró '{identifierToken.Lexeme}'.");
             }
             Consume(TokenType.COLON, $"Se esperaba ':' después de '{attributeName}'.");
+
+            // Inicializar una lista para almacenar las partes de la cadena
+            List<string> stringParts = new List<string>();
+
+            // Consumir el primer token de cadena
             Token stringToken = Consume(TokenType.STRING, $"Se esperaba un valor de cadena para '{attributeName}'.");
+            stringParts.Add((string)stringToken.Literal);
+
+            // Mientras el siguiente token sea @ o @@, consumir el operador y el siguiente token de cadena
+            while (Match(TokenType.AT, TokenType.AT_AT))
+            {
+                Token operador = Previous(); // Usar Previous() en lugar de Consume()
+                stringToken = Consume(TokenType.STRING, $"Se esperaba un valor de cadena para '{attributeName}' después de '{operador.Lexeme}'.");
+
+                if (operador.Type == TokenType.AT)
+                {
+                    stringParts.Add((string)stringToken.Literal);
+                }
+                else if (operador.Type == TokenType.AT_AT)
+                {
+                    stringParts.Add(" " + (string)stringToken.Literal);
+                }
+            }
+
+            // Consumir el token de coma (,) después del valor de cadena
             Consume(TokenType.COMMA, $"Se esperaba ',' después del valor de cadena para '{attributeName}'.");
-            return (string)stringToken.Literal;
+
+            // Concatenar todas las partes de la cadena
+            return string.Join("", stringParts);
         }
+
 
         private string ParseStringAttributeNew(TokenType expectedTokenType, string attributeName)
         {
@@ -634,7 +661,7 @@ namespace GwentInterpreters
         private Expression Term()
         {
             Expression expr = Factor();
-            while (Match(TokenType.MINUS, TokenType.PLUS))
+            while (Match(TokenType.MINUS, TokenType.PLUS, TokenType.AT, TokenType.AT_AT))
             {
                 Token operador = Previous();
                 Expression right = Factor();
@@ -642,7 +669,6 @@ namespace GwentInterpreters
             }
             return expr;
         }
-
         private Expression Factor()
         {
             Expression expr = Unary();

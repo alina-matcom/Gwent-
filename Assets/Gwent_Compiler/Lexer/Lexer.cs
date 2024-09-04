@@ -153,11 +153,11 @@ namespace GwentInterpreters
                 case '@':
                     if (Match('@'))
                     {
-                        AddToken(TokenType.DOUBLE_CONCAT);
+                        AddToken(TokenType.AT_AT);
                     }
                     else
                     {
-                        AddToken(TokenType.CONCAT);
+                        AddToken(TokenType.AT);
                     }
                     break;
                 case ' ':

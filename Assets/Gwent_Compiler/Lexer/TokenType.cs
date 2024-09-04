@@ -59,8 +59,8 @@ namespace GwentInterpreters
         LESS_EQUAL,     // Representa el operador "<="
         MINUS_EQUAL,  // -=
         PLUS_EQUAL,   // +=
-        CONCAT,       // Representa el operador "@"
-        DOUBLE_CONCAT, // Representa el operador "@@"
+        AT,       // Representa el operador "@"
+        AT_AT, // Representa el operador "@@"
         INCREMENT,      // Representa el operador "++" (incremento)
         DECREMENT,      // Representa el operador "--" (decremento)
         LAMBDA,         // Representa el operador de función lambda "=>"

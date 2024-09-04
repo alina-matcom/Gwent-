@@ -547,9 +547,28 @@ namespace GwentInterpreters
                     return (double)left - (double)right;
 
                 case TokenType.PLUS:
-                    CheckNumberOperands(expr.Operator, left, right);
-                    return (double)left + (double)right;
+                    if (left is double && right is double)
+                    {
+                        return (double)left + (double)right;
+                    }
+                    if (left is string && right is string)
+                    {
+                        return (string)left + (string)right;
+                    }
+                    throw new RuntimeError(expr.Operator, "Operands must be two numbers or two strings.");
+                case TokenType.AT:
+                    if (left is string && right is string)
+                    {
+                        return (string)left + (string)right;
+                    }
+                    throw new RuntimeError(expr.Operator, "Operands must be two strings.");
 
+                case TokenType.AT_AT:
+                    if (left is string && right is string)
+                    {
+                        return (string)left + " " + (string)right;
+                    }
+                    throw new RuntimeError(expr.Operator, "Operands must be two strings.");
                 case TokenType.SLASH:
                     CheckNumberOperands(expr.Operator, left, right);
                     return (double)left / (double)right;
@@ -583,7 +602,6 @@ namespace GwentInterpreters
             // Inalcanzable
             return null;
         }
-
         public object VisitIndexExpression(IndexExpression expr)
         {
             Console.WriteLine($"Visiting IndexExpression: {expr}");

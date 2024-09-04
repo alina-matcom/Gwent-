@@ -100,6 +100,40 @@ public class GameController : Singleton<GameController>
 
         // Interpretar las declaraciones parseadas
         List<CardOld> cards = interpreter.Interpret(statements);
+        if (cards.Count > 0)
+        {
+            CardOld first = cards[0];
+            if (first is Card card)
+            {
+                // Acceder al primer EffectActionResult de la propiedad OnActivation de la carta
+                if (card.OnActivation.Count > 0)
+                {
+                    EffectActionResult firstEffectActionResult = card.OnActivation[0];
+
+                    // Acceder a la propiedad SelectorResult del EffectActionResult
+                    SelectorResult selectorResult = firstEffectActionResult.SelectorResult;
+
+                    // Evaluar el Predicate del SelectorResult pasando la carta como parámetro
+                    bool predicateResult = selectorResult.Predicate(card);
+
+                    // Imprimir el resultado booleano del Predicate
+                    Console.WriteLine($"El resultado del predicado es: {predicateResult}");
+                }
+                else
+                {
+                    Console.WriteLine("La carta no tiene efectos de activación.");
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("La carta no es de tipo Card.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("No se encontraron cartas.");
+        }
 
         return cards;
     }
